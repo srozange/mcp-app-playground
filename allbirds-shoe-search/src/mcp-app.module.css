@@ -1,0 +1,107 @@
+.container {
+  padding: 12px;
+  background: var(--color-background-primary, #fff);
+  font-family: var(--font-sans, system-ui, sans-serif);
+  min-height: 100vh;
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--color-text-secondary, #888);
+  font-size: 14px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--color-border-primary, #e0e0e0);
+  border-top-color: #1d7843;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.card {
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--color-background-secondary, #f8f8f8);
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+.card:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.cardImage {
+  aspect-ratio: 1;
+  background: #f0f0f0;
+  overflow: hidden;
+}
+.cardImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 6px;
+}
+.imagePlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #ccc;
+  font-size: 24px;
+}
+
+.cardInfo { padding: 8px 10px 10px; }
+
+.shoeName {
+  font-size: 12px;
+  font-weight: 500;
+  margin: 0 0 6px;
+  line-height: 1.4;
+  color: var(--color-text-primary, #1a1a1a);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cardMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.price {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-primary, #1a1a1a);
+}
+
+.sizeTag {
+  padding: 1px 6px;
+  background: #edf7f1;
+  border: 1px solid #b3dfc4;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1d7843;
+}
