@@ -25,6 +25,7 @@ export interface Shoe {
 export interface SearchResult {
   query: string;
   size?: string;
+  gender?: "men" | "women";
   shoes: Shoe[];
   totalFound: number;
   error: string | null;
@@ -135,7 +136,7 @@ async function fetchAllProducts(): Promise<ShopifyProduct[]> {
   return productsCache;
 }
 
-async function searchAllbirds(query: string, size?: string): Promise<SearchResult> {
+async function searchAllbirds(query: string, size?: string, gender?: "men" | "women"): Promise<SearchResult> {
   const { terms, size: detectedSize } = parseQueryAndSize(query, size);
   const usSize = detectedSize;
   const allProducts = await fetchAllProducts();
@@ -148,6 +149,13 @@ async function searchAllbirds(query: string, size?: string): Promise<SearchResul
       return re.test(title);
     });
   });
+
+  // Filter by gender if provided
+  if (gender === "women") {
+    matches = matches.filter((p) => /\bwomen\b/i.test(p.title));
+  } else if (gender === "men") {
+    matches = matches.filter((p) => /\bmen\b/i.test(p.title) && !/\bwomen\b/i.test(p.title));
+  }
 
   // Filter by size if provided
   if (usSize) {
@@ -180,7 +188,7 @@ async function searchAllbirds(query: string, size?: string): Promise<SearchResul
     };
   }));
 
-  return { query, size: usSize ?? size, shoes, totalFound: matches.length, error: null };
+  return { query, size: usSize ?? size, gender, shoes, totalFound: matches.length, error: null };
 }
 
 export function createServer(): McpServer {
@@ -197,10 +205,12 @@ export function createServer(): McpServer {
       inputSchema: z.object({
         query: z.string().min(1).describe('Search query, e.g. "tree runner", "wool runner", "trail"'),
         size: z.string().optional().describe("Shoe size to filter by — EU (e.g. 42) or US (e.g. 9)."),
+        gender: z.enum(["men", "women"]).optional().describe("Filter by gender: 'men' or 'women'."),
       }),
       outputSchema: z.object({
         query: z.string(),
         size: z.string().optional(),
+        gender: z.enum(["men", "women"]).optional(),
         shoes: z.array(
           z.object({
             name: z.string(),
@@ -216,16 +226,16 @@ export function createServer(): McpServer {
       }),
       _meta: { ui: { resourceUri } },
     },
-    async ({ query, size }): Promise<CallToolResult> => {
+    async ({ query, size, gender }): Promise<CallToolResult> => {
       try {
-        const result = await searchAllbirds(query, size);
+        const result = await searchAllbirds(query, size, gender);
         return {
           content: [{ type: "text", text: JSON.stringify(result) }],
           structuredContent: result as unknown as Record<string, unknown>,
         };
       } catch (err) {
         const error = err instanceof Error ? err.message : String(err);
-        const result: SearchResult = { query, size, shoes: [], totalFound: 0, error };
+        const result: SearchResult = { query, size, gender, shoes: [], totalFound: 0, error };
         return {
           content: [{ type: "text", text: JSON.stringify(result) }],
           structuredContent: result as unknown as Record<string, unknown>,

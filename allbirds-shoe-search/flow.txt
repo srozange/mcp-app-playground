@@ -1,0 +1,15 @@
+ 1. À l'initialisation du tool (avant même l'appel)
+     Claude Desktop lit _meta.ui.resourceUri
+         ↓
+     Fetche ui://... → reçoit le HTML React buildé
+         ↓
+     Crée l'iframe avec ce HTML (l'app React démarre, useApp() s'initialise)
+
+  2. Quand le tool est appelé et retourne un résultat
+     Claude Desktop reçoit le CallToolResult (le JSON)
+         ↓
+     postMessage → iframe  (message de type ui/toolresult)
+         ↓
+     ontoolresult(r) se déclenche dans le React
+         ↓
+     L'app parse r et met à jour son état
